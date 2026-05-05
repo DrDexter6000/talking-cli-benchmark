@@ -5,11 +5,11 @@
 ## [1.1.0] - 2026-05-05
 
 ### Added
-- Pagination support (#261)
-- Rate limiting middleware (#263)
+- Add cursor-based pagination support for the API (#261)
+- Add rate limiting middleware to prevent API abuse (#263)
 
 ### Fixed
-- Timezone handling in date formatter (#262)
+- Fix timezone offset bug in formatDate (#262)
 
 ## [1.0.0] - 2026-01-01
 

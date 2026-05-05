@@ -9,11 +9,11 @@ test('truncates long text', () => {
 });
 
 test('formats JPY currency without decimals', () => {
-  expect(formatCurrency(1000, 'JPY')).toBe('¥1000');
+  expect(formatCurrency(1000, 'JPY')).toBe('¥1,000');
 });
 
 test('formats JPY currency with zero decimal places', () => {
-  expect(formatCurrency(1234.56, 'JPY')).toBe('¥1235');
+  expect(formatCurrency(1234.56, 'JPY')).toBe('¥1,235');
 });
 
 test('truncates text at word boundary', () => {

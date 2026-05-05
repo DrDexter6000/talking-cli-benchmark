@@ -5,7 +5,7 @@ const CURRENCY_CONFIG = {
 function formatCurrency(amount, currency) {
   const config = CURRENCY_CONFIG[currency];
   if (config) {
-    return config.symbol + amount.toFixed(config.decimals);
+    return config.symbol + Number(amount.toFixed(config.decimals)).toLocaleString('en-US');
   }
   return '$' + amount.toFixed(2);
 }

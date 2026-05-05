@@ -1,14 +1,14 @@
 # Repository Audit Report
 
-**Date:** 2026-04-21  
-**Auditor:** Automated Repository Audit  
+**Date:** 2026-05-05
+**Auditor:** Automated Repository Audit
 **Scope:** Full structural review of the repository
 
 ---
 
 ## Executive Summary
 
-This audit identifies **11 structural issues** across the repository, ranging from missing standard files to incomplete documentation and gaps in test coverage. The most critical issues are the missing `package.json` (despite the README referencing `npm install`), lack of `.gitignore`, absence of a `LICENSE` file, and a test coverage gap for the `validators.js` module.
+This audit identifies **16 structural issues** across the repository, ranging from missing standard files to incomplete documentation, code bugs, and gaps in test coverage. The most critical issues are the missing `package.json` (despite the README referencing `npm install`), a test coverage gap for `validators.js`, dead/unused code, and a bug in `formatter.js` where the `currency` parameter is ignored.
 
 ---
 
@@ -31,7 +31,7 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 |-------|--------|
 | **Location** | Root directory |
 | **Severity** | 🟠 High |
-| **Description** | No `.gitignore` file exists. This risks committing `node_modules/`, `.env` files, OS artifacts (`.DS_Store`), and other generated files. |
+| **Description** | No `.gitignore` file exists. This risks committing `node_modules/`, `.env` files, OS artifacts (`.DS_Store`), IDE configs, and other generated files. |
 | **Recommendation** | Create a `.gitignore` covering at minimum: `node_modules/`, `.env`, `.DS_Store`, `*.log`, and IDE/editor directories. |
 
 ---
@@ -42,7 +42,7 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 |-------|--------|
 | **Location** | Root directory |
 | **Severity** | 🟠 High |
-| **Description** | The README.md states "License: MIT" but no actual `LICENSE` file exists in the repository. A license file is legally necessary to formally grant usage rights. |
+| **Description** | The README.md states "License: MIT" but no actual `LICENSE` file exists in the repository. A license file is legally necessary to formally grant usage rights to downstream consumers. |
 | **Recommendation** | Add a standard MIT `LICENSE` file with the appropriate copyright holder and year. |
 
 ---
@@ -53,7 +53,7 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 |-------|--------|
 | **Location** | `src/validators.js` → no `tests/validators.test.js` |
 | **Severity** | 🟠 High |
-| **Description** | There are 4 source files (`cart.js`, `formatter.js`, `utils.js`, `validators.js`) but only 3 test files (`cart.test.js`, `formatter.test.js`, `utils.test.js`). The `validators.js` module has **zero test coverage**. It exports `validatePhone` and also defines `validateEmail` (see issue #6 below). |
+| **Description** | There are 4 source files (`cart.js`, `formatter.js`, `utils.js`, `validators.js`) but only 3 test files (`cart.test.js`, `formatter.test.js`, `utils.test.js`). The `validators.js` module has **zero test coverage** — a 25% gap in source file coverage. |
 | **Recommendation** | Create `tests/validators.test.js` with tests for both `validateEmail()` and `validatePhone()`. |
 
 ---
@@ -64,7 +64,7 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 |-------|--------|
 | **Location** | `.github/workflows/` (directory does not exist) |
 | **Severity** | 🟠 High |
-| **Description** | There is no `.github/` directory and no GitHub Actions workflow files. This means there is no automated testing, linting, or deployment pipeline configured. |
+| **Description** | There is no `.github/` directory and no GitHub Actions workflow files. This means there is no automated testing, linting, or deployment pipeline configured for the repository. |
 | **Recommendation** | Add a `.github/workflows/ci.yml` workflow that runs tests on every push and pull request to the `main` branch. |
 
 ---
@@ -75,8 +75,8 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 |-------|--------|
 | **Location** | `src/validators.js` |
 | **Severity** | 🟡 Medium |
-| **Description** | The file defines a `validateEmail` function but only exports `{ validatePhone }`. The `validateEmail` function is dead code — it exists but is inaccessible to consumers. This is either a bug (missing export) or dead code that should be cleaned up. |
-| **Recommendation** | Either export `validateEmail` as well (if intended for use) or remove it to eliminate dead code. |
+| **Description** | The file defines a `validateEmail` function but the module only exports `{ validatePhone }`. The `validateEmail` function is dead code — it exists but is completely inaccessible to consumers. This is either a bug (missing export) or dead code that should be cleaned up. |
+| **Recommendation** | Either export `validateEmail` alongside `validatePhone` (if intended for use), or remove it entirely. |
 
 ---
 
@@ -86,7 +86,7 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 |-------|--------|
 | **Location** | `README.md` |
 | **Severity** | 🟡 Medium |
-| **Description** | The README contains only: a title, basic "Getting Started" section (two commands), a minimal API endpoint list, and a license mention. Missing sections include: |
+| **Description** | The README is very sparse at only 244 bytes. Missing sections include: |
 | | - Project description / purpose |
 | | - Prerequisites (Node version, etc.) |
 | | - Testing instructions (`npm test`) |
@@ -109,7 +109,7 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 
 ---
 
-### 9. [MEDIUM] No `.github/` Configuration
+### 9. [MEDIUM] No `.github/` Issue/PR Templates
 
 | Field | Detail |
 |-------|--------|
@@ -120,32 +120,87 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 
 ---
 
-### 10. [LOW] Stale TODO in `experiments/ml-pipeline.js`
+### 10. [MEDIUM] `formatCurrency` Ignores Its `currency` Parameter
+
+| Field | Detail |
+|-------|--------|
+| **Location** | `src/formatter.js` — `formatCurrency(amount, currency)` |
+| **Severity** | 🟡 Medium |
+| **Description** | The function accepts a `currency` parameter (e.g., `'USD'`, `'EUR'`) but the implementation ignores it entirely and always hard-codes the `$` prefix. Calling `formatCurrency(10.5, 'EUR')` returns `$10.50` instead of `€10.50`. |
+| **Recommendation** | Either use the `currency` parameter to select the correct symbol, or remove the parameter if multi-currency is not supported. |
+
+---
+
+### 11. [MEDIUM] `utils.test.js` Imports `formatDate` but Never Tests It
+
+| Field | Detail |
+|-------|--------|
+| **Location** | `tests/utils.test.js` |
+| **Severity** | 🟡 Medium |
+| **Description** | The test file imports both `debounce` and `formatDate` from `src/utils.js`, but only writes tests for `debounce`. The `formatDate` function has **zero test coverage** despite being imported. |
+| **Recommendation** | Add test cases for `formatDate`, covering valid dates, invalid dates, and edge cases (null, undefined, timestamps). |
+
+---
+
+### 12. [LOW] Stale TODO in `experiments/ml-pipeline.js`
 
 | Field | Detail |
 |-------|--------|
 | **Location** | `experiments/ml-pipeline.js` |
 | **Severity** | 🟢 Low |
-| **Description** | The file contains a `// TODO: Remove before v2.0` comment. This is an experimental file flagged for removal but still present in the repository, potentially causing confusion. |
+| **Description** | The file contains a `// TODO: Remove before v2.0` comment. This experimental file is flagged for removal but remains in the repository, potentially causing confusion about whether it is still relevant. |
 | **Recommendation** | Either remove the file if the experiment is complete, or update the TODO with a clear removal plan/timeline. |
 
 ---
 
-### 11. [LOW] Docs Directory Contains Only Stub Files
+### 13. [LOW] Docs Directory Contains Only Stub Files
 
 | Field | Detail |
 |-------|--------|
 | **Location** | `docs/` directory |
 | **Severity** | 🟢 Low |
-| **Description** | The `docs/` directory contains subdirectories (`feature/`, `fix/`) but each file is just a one-line stub (e.g., "Notes for Add pagination support"). These are not useful as documentation. |
-| **Recommendation** | Either expand these into proper documentation files with meaningful content, or remove the placeholder stubs to avoid confusion. |
+| **Description** | The `docs/` directory contains subdirectories (`feature/`, `fix/`) but each file is just a one-line stub (e.g., "Notes for Add pagination support"). These provide no useful documentation. |
+| **Recommendation** | Either expand these into proper documentation files with meaningful content, or remove the placeholder stubs. |
+
+---
+
+### 14. [LOW] CHANGELOG.md Has Empty `[Unreleased]` Section
+
+| Field | Detail |
+|-------|--------|
+| **Location** | `CHANGELOG.md` |
+| **Severity** | 🟢 Low |
+| **Description** | The changelog contains an `## [Unreleased]` heading with no content beneath it. This is an empty section heading that serves no purpose. |
+| **Recommendation** | Either populate the Unreleased section with pending changes, or remove the empty heading until changes exist. |
+
+---
+
+### 15. [LOW] `results/.gitkeep` Is an Empty Placeholder
+
+| Field | Detail |
+|-------|--------|
+| **Location** | `results/.gitkeep` |
+| **Severity** | 🟢 Low |
+| **Description** | The `results/` directory contains an empty `.gitkeep` file. Git directories are tracked by their contents, so this file serves no purpose if other files exist in `results/`. |
+| **Recommendation** | Remove the `.gitkeep` file since the directory already has content (`experiment-1-gh-issues.md`). |
+
+---
+
+### 16. [LOW] README Documents Non-Existent API Endpoints
+
+| Field | Detail |
+|-------|--------|
+| **Location** | `README.md` |
+| **Severity** | 🟢 Low |
+| **Description** | The README lists `GET /api/health` and `GET /api/users` as API endpoints, but there is no server code in the repository that implements these routes. No `app.js`, `server.js`, or route handler files exist. |
+| **Recommendation** | Either remove the API endpoints section from the README, or implement the documented endpoints. |
 
 ---
 
 ## Summary Table
 
-| # | Issue | Severity | File/Directory |
-|---|-------|----------|----------------|
+| # | Issue | Severity | Location |
+|---|-------|----------|----------|
 | 1 | Missing `package.json` | 🔴 Critical | Root |
 | 2 | Missing `.gitignore` | 🟠 High | Root |
 | 3 | Missing `LICENSE` file | 🟠 High | Root |
@@ -154,16 +209,31 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 | 6 | `validateEmail` defined but not exported | 🟡 Medium | `src/validators.js` |
 | 7 | README.md is incomplete | 🟡 Medium | `README.md` |
 | 8 | Missing `CONTRIBUTING.md` | 🟡 Medium | Root |
-| 9 | No `.github/` configuration | 🟡 Medium | `.github/` |
-| 10 | Stale TODO in experiment | 🟢 Low | `experiments/ml-pipeline.js` |
-| 11 | Docs are placeholder stubs | 🟢 Low | `docs/` |
+| 9 | No `.github/` templates | 🟡 Medium | `.github/` |
+| 10 | `formatCurrency` ignores `currency` param | 🟡 Medium | `src/formatter.js` |
+| 11 | `formatDate` imported but not tested | 🟡 Medium | `tests/utils.test.js` |
+| 12 | Stale TODO in experiment | 🟢 Low | `experiments/ml-pipeline.js` |
+| 13 | Docs are placeholder stubs | 🟢 Low | `docs/` |
+| 14 | Empty `[Unreleased]` in CHANGELOG | 🟢 Low | `CHANGELOG.md` |
+| 15 | Unnecessary `.gitkeep` | 🟢 Low | `results/.gitkeep` |
+| 16 | Non-existent API endpoints documented | 🟢 Low | `README.md` |
+
+## Severity Breakdown
+
+| Severity | Count |
+|----------|-------|
+| 🔴 Critical | 1 |
+| 🟠 High | 4 |
+| 🟡 Medium | 6 |
+| 🟢 Low | 5 |
+| **Total** | **16** |
 
 ---
 
 ## Recommendations Priority
 
 ### Immediate (Critical):
-1. Create `package.json` — without it, the project cannot be built or tested as documented
+1. **Create `package.json`** — without it, the project cannot be built or tested as documented
 
 ### Short-term (High):
 2. Add `.gitignore`
@@ -172,14 +242,19 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 5. Set up CI/CD pipeline (GitHub Actions)
 
 ### Medium-term (Medium):
-6. Fix `validators.js` exports
+6. Fix `validators.js` exports (export or remove `validateEmail`)
 7. Expand README.md
 8. Add `CONTRIBUTING.md`
 9. Add `.github/` templates
+10. Fix `formatCurrency` to respect the `currency` parameter
+11. Add tests for `formatDate` in `utils.test.js`
 
 ### Low priority:
-10. Clean up experiment TODOs or remove stale files
-11. Either flesh out or remove documentation stubs
+12. Clean up experiment TODOs or remove stale files
+13. Either flesh out or remove documentation stubs
+14. Populate or remove empty `[Unreleased]` changelog section
+15. Remove unnecessary `.gitkeep`
+16. Align README API documentation with actual code
 
 ---
 
@@ -188,8 +263,8 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 ```
 /
 ├── AUDIT-REPORT.md          ← This file (new)
-├── CHANGELOG.md             ✓ Present (basic, only one release)
-├── README.md                ⚠ Present but incomplete
+├── CHANGELOG.md             ⚠ Present but has empty [Unreleased] section
+├── README.md                ⚠ Present but incomplete (244 bytes)
 ├── docs/
 │   ├── feature/
 │   │   ├── pagination-notes.txt       ⚠ Stub only
@@ -203,17 +278,17 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 │   │   └── gh-issues-talking.md       ✓ Present
 │   └── ml-pipeline.js                 ⚠ Stale TODO
 ├── results/
-│   ├── .gitkeep                       ⚠ Placeholder file
+│   ├── .gitkeep                       ⚠ Unnecessary placeholder
 │   └── experiment-1-gh-issues.md      ✓ Present
 ├── src/
 │   ├── cart.js                        ✓ Has test
-│   ├── formatter.js                   ✓ Has test
-│   ├── utils.js                       ✓ Has test
-│   └── validators.js                  ✗ NO test
+│   ├── formatter.js                   ✓ Has test (⚠ bug: currency param ignored)
+│   ├── utils.js                       ✓ Has test (⚠ partial: formatDate untested)
+│   └── validators.js                  ✗ NO test (⚠ dead code: validateEmail unexported)
 ├── tests/
-│   ├── cart.test.js                   ✓
-│   ├── formatter.test.js              ✓
-│   └── utils.test.js                  ✓
+│   ├── cart.test.js                   ✓ (1 test case — thin)
+│   ├── formatter.test.js              ✓ (2 test cases)
+│   └── utils.test.js                  ✓ (partial — formatDate not tested)
 │   └── validators.test.js             ✗ MISSING
 ├── ✗ .gitignore                       MISSING
 ├── ✗ .github/                         MISSING (no CI, no templates)
@@ -221,3 +296,16 @@ This audit identifies **11 structural issues** across the repository, ranging fr
 ├── ✗ LICENSE                          MISSING
 └── ✗ package.json                     MISSING
 ```
+
+---
+
+## Test Coverage Analysis
+
+| Source File | Test File | Coverage Status |
+|-------------|-----------|-----------------|
+| `src/cart.js` | `tests/cart.test.js` | ✅ Covered (1 test — thin) |
+| `src/formatter.js` | `tests/formatter.test.js` | ✅ Covered (2 tests) |
+| `src/utils.js` | `tests/utils.test.js` | ⚠ Partial (`debounce` tested, `formatDate` untested) |
+| `src/validators.js` | ❌ No test file | ❌ Zero coverage |
+
+**Overall coverage: 3 of 4 source files have test files (75%) — but actual function coverage is lower due to untested exports.**

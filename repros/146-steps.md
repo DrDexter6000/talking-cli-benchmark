@@ -1,23 +1,28 @@
-# Reproduction Steps for Issue #146
-
-## Issue Summary
-Pagination resets to page 1 when applying filters
+# Reproduction Steps: Pagination Resets to Page 1 When Applying Filters
 
 ## Steps to Reproduce
 
-1. Open the application in Safari 17 on iOS (also reproducible on Android Chrome)
-2. Navigate to a paginated list of results
-3. Navigate to page 2 or higher
-4. Apply a filter to the results (e.g., select a category, date range, or status filter)
-5. Observe the pagination state
+1. Navigate to a list view that supports pagination
+2. Navigate to page 2 or a higher page number
+3. Apply a filter to the list (e.g., select a category filter, status filter, etc.)
+4. Observe the page number after the filter is applied
 
 ## Expected Behavior
-The current page number (e.g., page 2) should be retained when applying a filter. The filter should be applied to the current page of results.
+
+When a filter is applied while on page 2 or higher, the application should either:
+- Stay on the current page (page 2+) with the filter applied, OR
+- Reset to page 1 but clearly indicate this to the user
+
+The applied filter should remain active.
 
 ## Actual Behavior
-The page resets to page 1 when applying a filter, even though the user was viewing page 2 or higher. The filter does get applied to the results. To return to page 2, the user must manually navigate again.
+
+The page number resets to page 1 after applying the filter. The filter itself is correctly applied. When the user navigates back to page 2, the filter remains active. This requires the user to manually re-navigate to their desired page every time they change filters.
 
 ## Environment
 
-- **Primary browser:** Safari 17 on iOS
-- **Secondary browser:** Android Chrome (also affected)
+- **Browser:** Safari 17
+- **Operating System:** iOS
+- **Additional Testing:** Also reproducible on Android Chrome (per user report)
+- **User:** DrDexter6000
+- **Issue Date:** 2026-05-05

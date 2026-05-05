@@ -8,4 +8,5 @@ function validatePhone(phone) {
   return re.test(phone);
 }
 
+// validateEmail is used in form validation but not exported
 module.exports = { validatePhone };

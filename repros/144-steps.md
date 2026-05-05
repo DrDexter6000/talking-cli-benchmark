@@ -1,23 +1,23 @@
-# Reproduction Steps for Issue #144
-
-## Issue Summary
-App crashes on CSV import with special characters
+# Reproduction Steps: CSV Import Crash with Special Characters
 
 ## Steps to Reproduce
 
-1. Create a CSV file containing a mix of regular text and accented characters (e.g., café, naïve, résumé)
-2. Open the application in Chrome 120
-3. Navigate to the CSV import feature
-4. Select and upload the CSV file with special characters
+1. Prepare a CSV file containing a mix of regular text and accented characters (e.g., café, naïve, résumé, or other special characters)
+2. Navigate to the CSV import feature in the application
+3. Select the prepared CSV file for import
+4. Initiate the import process
 
 ## Expected Behavior
-The CSV file imports successfully and the data is processed without errors.
+
+The CSV file should import successfully, with all data (including accented characters) being properly processed and stored in the application.
 
 ## Actual Behavior
-The application crashes. The import starts but then the screen goes white and the user is redirected to an error page.
+
+The application crashes immediately after starting the import. The user sees a white screen followed by an error page. The import fails to complete.
 
 ## Environment
 
 - **Browser:** Chrome 120
-- **OS:** macOS Sonoma
-- **File type:** CSV with accented/special characters
+- **Operating System:** macOS Sonoma
+- **User:** DrDexter6000
+- **Issue Date:** 2026-05-05

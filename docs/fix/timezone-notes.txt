@@ -1,1 +1,0 @@
-Notes for Fix timezone handling in date formatter

@@ -1,18 +1,22 @@
-# Reproduction Steps for Issue #214: Pagination resets to page 1 when applying filters
+# Reproduction Steps for Issue #214 — Pagination resets to page 1 when applying filters
 
 ## Steps to Reproduce
-1. Open the application using Safari 17 on iOS (also reproducible on Android Chrome).
-2. Navigate to a paginated list view (e.g., product list, user list).
-3. Navigate to page 2 or higher.
-4. Apply any filter to the results.
-5. Observe the pagination state.
+1. Open the application in Safari 17 on iOS.
+2. Navigate to a paginated list view.
+3. Navigate to page 2 or higher using pagination controls.
+4. Apply a filter to the current results.
+5. Observe what page the results show after the filter is applied.
+6. (Optional) Navigate back to page 2 and check if the filter is still applied.
 
 ## Expected Behavior
-The filter should be applied and the results should stay on the current page (e.g., page 2). The user should not need to re-navigate after changing filters.
+When a filter is applied, the results should update and remain on the current page. The user should not have to re-navigate after changing filters.
 
 ## Actual Behavior
-The pagination resets to page 1 immediately when the filter is applied, even though the filter is correctly applied to the results. The user then has to manually navigate back to page 2 or higher to continue. Navigating to page 2 again maintains the applied filter correctly — the issue only occurs when applying a filter while on a page other than page 1.
+Applying a filter while on page 2 or higher resets the results back to page 1. The filter is correctly applied to the results, but the user is taken back to the first page. If the user navigates to page 2 again, the filter remains active — the problem only occurs at the moment a filter is applied while on a page other than page 1.
+
+## Additional Notes
+- A colleague reports the same issue occurs on Android Chrome.
 
 ## Environment
-- **Browser:** Safari 17 on iOS (primary), also reproduces on Android Chrome
-- **OS:** iOS (primary), Android (secondary)
+- **Browser**: Safari 17 on iOS (primary); also Android Chrome (secondary)
+- **OS**: iOS (primary); Android (secondary)

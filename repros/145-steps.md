@@ -1,23 +1,23 @@
-# Reproduction Steps for Issue #145
-
-## Issue Summary
-Search returns 500 error with certain queries
+# Reproduction Steps: Search Returns 500 Error with Quotes
 
 ## Steps to Reproduce
 
-1. Open the application in Firefox 121 on Windows 11
-2. Navigate to the search functionality
-3. Enter a search query containing quote marks (e.g., `project "alpha"`)
-4. Submit the search
+1. Navigate to the search feature in the application
+2. Enter a search query containing quote marks (e.g., `project "alpha"`)
+3. Submit the search
 
 ## Expected Behavior
-The search returns results matching the query, including quoted terms if applicable.
+
+The search should return matching results for the query, including results that match the quoted term.
 
 ## Actual Behavior
-The search returns a 500 Internal Server Error. The issue started after a recent update.
+
+The application returns a 500 Internal Server Error. The search does not complete and no results are displayed.
 
 ## Environment
 
 - **Browser:** Firefox 121
-- **OS:** Windows 11
-- **Trigger:** Search queries containing quote marks ("), also reported with other special characters
+- **Operating System:** Windows 11
+- **User:** DrDexter6000
+- **Issue Date:** 2026-05-05
+- **Notes:** This issue started after the last update. Normal searches without quotes work fine. Other special characters may also trigger the error, but quotes are the most consistent trigger.

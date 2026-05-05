@@ -1,19 +1,23 @@
-# Reproduction Steps for Issue #213: Search returns 500 error with certain queries
+# Reproduction Steps for Issue #213 — Search returns 500 error with certain queries
 
 ## Steps to Reproduce
-1. Open the application using Firefox 121 on Windows 11.
+1. Open the application in Firefox 121 on Windows 11.
 2. Navigate to the search feature.
-3. Enter a search query that includes double quotation marks, e.g., `project "alpha"`.
-4. Submit the search.
-5. Observe the response.
+3. Enter a search query that includes double quotation marks, for example: `project "alpha"`
+4. Submit the search query.
+5. Observe the server response.
 
 ## Expected Behavior
-Search results should be returned for the query, with quotes handled gracefully (e.g., treated as literal characters or ignored).
+The search should return matching results normally, without errors.
 
 ## Actual Behavior
-A 500 Internal Server Error is returned. The search fails. Normal searches (without quotes) work fine. Other special characters may also trigger the error intermittently, but quotation marks are the most consistent trigger.
+A **500 Internal Server Error** is returned. The search fails completely.
+
+## Additional Notes
+- This only started happening after the last application update.
+- Normal searches (without quotes or special characters) work fine.
+- Quote marks are the most consistent trigger for the error, though other special characters can also cause it intermittently.
 
 ## Environment
-- **Browser:** Firefox 121
-- **OS:** Windows 11
-- **Note:** The issue started occurring after the last application update.
+- **Browser**: Firefox 121
+- **OS**: Windows 11

@@ -4,6 +4,14 @@ test('formats USD currency', () => {
   expect(formatCurrency(10.5, 'USD')).toBe('$10.50');
 });
 
+test('formats USD with thousand separators', () => {
+  expect(formatCurrency(1000, 'USD')).toBe('$1,000.00');
+});
+
+test('formats USD with large numbers', () => {
+  expect(formatCurrency(1234567.89, 'USD')).toBe('$1,234,567.89');
+});
+
 test('truncates long text', () => {
   expect(truncateText('hello world', 5)).toBe('hello...');
 });
